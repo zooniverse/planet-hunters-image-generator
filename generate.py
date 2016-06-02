@@ -23,6 +23,7 @@ except IndexError:
 with open(INPUT_FILE_LIST) as input_files_f:
     input_rows = csv.reader(input_files_f, delimiter=' ')
     input_headers = input_rows.next()
+    manifest_out = [["filename"] + input_headers]
     bar = progressbar.ProgressBar(redirect_stdout=True)
 
     for input_row in bar(list(input_rows)):
@@ -129,3 +130,10 @@ with open(INPUT_FILE_LIST) as input_files_f:
         # Writing figures or plotting
         fig.savefig(os.path.join(OUTPATH, output_filename))
         pyplot.close(fig)
+
+        manifest_out.append(
+            [output_filename] + [input_data[col] for col in input_headers]
+        )
+
+with open(os.path.join(OUTPATH, "manifest.csv"), "w") as manifest_file:
+    csv.writer(manifest_file).writerows(manifest_out)
