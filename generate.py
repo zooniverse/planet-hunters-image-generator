@@ -11,6 +11,14 @@ from matplotlib.ticker import ScalarFormatter
 
 # Amount of time before/after TCE midtransit
 BUFFERTIMES = (0.5, 1.5, 5)
+PUBLIC_METADATA = (
+    'srad',
+    'kepmag',
+    'userxmin',
+    'userxmid',
+    'userxmax',
+    'userduration',
+)
 
 OUTPATH = os.environ.get('OUTPATH', os.path.join('/', 'out'))
 
@@ -20,10 +28,15 @@ except IndexError:
     print "Please specify the name of the file containing lightcurve URLs"
     sys.exit(1)
 
+metadata_header = lambda h: '{}{}'.format(
+    '' if h in PUBLIC_METADATA else '#',
+    h
+)
+
 with open(INPUT_FILE_LIST) as input_files_f:
     input_rows = csv.reader(input_files_f, delimiter=' ')
     input_headers = input_rows.next()
-    manifest_out = [["filename"] + input_headers]
+    manifest_out = [["#filename"] + map(metadata_header, input_headers)]
     bar = progressbar.ProgressBar(redirect_stdout=True)
 
     for input_row in bar(list(input_rows)):
