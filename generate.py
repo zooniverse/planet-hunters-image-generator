@@ -19,6 +19,7 @@ PUBLIC_METADATA = (
     'userxmax',
     'userduration',
 )
+DOWNLOAD_RETRIES = 5
 
 OUTPATH = os.environ.get('OUTPATH', os.path.join('/', 'out'))
 
@@ -44,11 +45,19 @@ with open(INPUT_FILE_LIST) as input_files_f:
 
         lightcurve = requests.get(input_data['datalocation'])
 
-        if lightcurve.status_code != 200:
-            print "Warning: Could not download %s" % input_data['datalocation']
-            continue
-
-        lightcurve = lightcurve.json()
+        for attempt in range(DOWNLOAD_RETRIES):
+            if lightcurve.status_code != 200:
+                print "Warning: Could not download {} (attempt {})".format(
+                    input_data['datalocation'],
+                    attempt
+                )
+                if attempt == (DOWNLOAD_RETRIES - 1):
+                    print "Warning: Giving up on {}".format(
+                        input_data['datalocation']
+                    )
+            else:
+                lightcurve = lightcurve.json()
+                break
 
         userxmin = float(input_data['userxmin'])
         userxmax = float(input_data['userxmax'])
