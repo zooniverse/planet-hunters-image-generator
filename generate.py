@@ -43,6 +43,25 @@ with open(INPUT_FILE_LIST) as input_files_f:
     for input_row in bar(list(input_rows)):
         input_data = dict(zip(input_headers, input_row))
 
+        userxmin = float(input_data['userxmin'])
+        userxmax = float(input_data['userxmax'])
+        userxmid = float(input_data['userxmid'])
+
+        output_filename = input_data['datalocation'].split('/')[-1]
+        output_filename = output_filename.replace('.json', '')
+        output_filename = "%s-%s-%s.png" % (
+            output_filename,
+            userxmin,
+            userxmax
+        )
+
+        if os.path.exists(output_filename):
+            print "Warning: Skipping existing file {} (from {})".format(
+                output_filename,
+                input_data['datalocation']
+            )
+            continue
+
         lightcurve = requests.get(input_data['datalocation'])
 
         for attempt in range(DOWNLOAD_RETRIES):
@@ -58,18 +77,6 @@ with open(INPUT_FILE_LIST) as input_files_f:
             else:
                 lightcurve = lightcurve.json()
                 break
-
-        userxmin = float(input_data['userxmin'])
-        userxmax = float(input_data['userxmax'])
-        userxmid = float(input_data['userxmid'])
-
-        output_filename = input_data['datalocation'].split('/')[-1]
-        output_filename = output_filename.replace('.json', '')
-        output_filename = "%s-%s-%s.png" % (
-            output_filename,
-            userxmin,
-            userxmax
-        )
 
         fig, axes = pyplot.subplots(3, 1)
         fig.set_size_inches(10, 15.0)
