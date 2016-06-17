@@ -55,7 +55,7 @@ with open(INPUT_FILE_LIST) as input_files_f:
             userxmax
         )
 
-        if os.path.exists(output_filename):
+        if os.path.exists(os.path.join(OUTPATH, output_filename)):
             print "Warning: Skipping existing file {} (from {})".format(
                 output_filename,
                 input_data['datalocation']
