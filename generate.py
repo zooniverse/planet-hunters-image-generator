@@ -65,9 +65,10 @@ with open(INPUT_FILE_LIST) as input_files_f:
             )
             continue
 
-        lightcurve = requests.get(input_data['datalocation'])
+        lightcurve = None
 
         for attempt in range(DOWNLOAD_RETRIES):
+            lightcurve = requests.get(input_data['datalocation'])
             if lightcurve.status_code != 200:
                 print "Warning: Could not download {} (attempt {})".format(
                     input_data['datalocation'],
@@ -80,6 +81,9 @@ with open(INPUT_FILE_LIST) as input_files_f:
             else:
                 lightcurve = lightcurve.json()
                 break
+
+        if not lightcurve:
+            continue
 
         fig, axes = pyplot.subplots(3, 1)
         fig.set_size_inches(10, 15.0)
