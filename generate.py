@@ -60,6 +60,9 @@ with open(INPUT_FILE_LIST) as input_files_f:
                 output_filename,
                 input_data['datalocation']
             )
+            manifest_out.append(
+                [output_filename] + [input_data[col] for col in input_headers]
+            )
             continue
 
         lightcurve = requests.get(input_data['datalocation'])
